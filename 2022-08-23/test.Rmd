@@ -1,7 +1,9 @@
-testing
+###testing
 ```{r}
-library(magrittr)
-library(dplyr)
+library(magrittr) #for pipe operator
+library(dplyr) #to use glimpse
+library(ggplot2) # for graphing
+library(tidyverse) #unknown
 ```
 
 ```{r}
@@ -9,4 +11,37 @@ chip <- read.csv('chips.csv')
 
 chip %>% glimpse()
 ```
+In the readme it seems there's more variables in the dictionary than just 5 so then maybe I need to read in the data manually?
+```{r}
+chips_manual <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-08-23/chips.csv')
 
+chips_manual %>% 
+  glimpse()
+```
+Didn't make a difference. Moving on. 
+
+It may be interesting to see how the die (what even is that for CPUs and GPUs?) changes as the years go by since a major point of interest is Moors law, which is that speed/functionality of GPUs and CPUs double every year or so until reaching the limitations as specified by laws of physics.
+
+All data types seem correct so no wrangling necessary.
+```{r}
+chip %>% 
+  ggplot(aes(x = year, y = die_size_mm_2, color = die_size_mm_2)) +
+  geom_point() +
+  labs(title = "Die size of GPUs and CPUs across Time",
+       x = "Year",
+       y = "Die size in millimeters")
+```
+Seems that the size of the die increases with time.
+
+Now how does thermal design profile relate to how many millions of transistors there are?
+
+```{r}
+chip %>% 
+  ggplot(aes(x = tdp_w, y = transistors_million)) +
+  geom_point() +
+  labs(title = "Thermal Design Profile v Number of Millions of Transistors",
+       x = "Thermal Design Profile (width?)",
+       y = "Millions of Transistors")
+```
+
+Also an increasing relationship although definitely not linear. I don't know what the thermal design profile is, but I do know that GPUs have more transistors than CPUs.Although the dataset doesn't specify whether the measurements are for either of them.
