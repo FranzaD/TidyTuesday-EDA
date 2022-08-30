@@ -1,0 +1,12 @@
+testing
+```{r}
+library(magrittr)
+library(dplyr)
+```
+
+```{r}
+chip <- read.csv('chips.csv')
+
+chip %>% glimpse()
+```
+
