@@ -1,0 +1,103 @@
+---
+title: "Pell Grant Data Stream"
+author: "Deborah Franza"
+date: "2022-08-31"
+output: html_document
+---
+Libraries
+```{r}
+library(magrittr) #pipe operator
+library(dplyr) #glimpse()
+library(ggplot2) #plotting
+library(stringr) # to access function for counting the number of occurances for a specified string
+
+```
+
+```{r}
+pell <- read.csv('pell.csv')
+
+pell %>% 
+  glimpse()
+```
+##### Notes on Data Wrangling:
+* STATE should be a factor type since it represents states, and those are different categories
+  - yes since the factor datatype should have a finite number of categories
+* (debatable) SESSION as character or factor unsure
+* what is recipent? 
+  - Total number of recipients by year
+* Name should be character since there are potentially an infinite amount of university names
+  
+Data Wrangling, changing state to factor type:
+```{r}
+pell <- pell %>%  mutate(STATE = as.factor(STATE))
+
+pell %>% summary()
+```
+#### Try to find number of unique universities in the dataset (LATER)
+```{r}
+#shoulod names actually be the character type?
+pell$NAME %>% group_by() %>% summarise()
+
+unique(pell)
+```
+
+Notes:
+* not recent data, at least five years ago
+* identify data format, wide vs long?
+  - I believe this is long form because states take up multiple rows
+
+Let's create a bargraph showing total award by state?
+```{r}
+pell %>% ggplot( aes(x=STATE)) +
+  geom_bar()
+
+#Let's flip the axis and see if it's more readable:
+#let's make text size for state names smaller
+#fix the horizontal axis, so that zero is all the way to the left
+
+pell %>% ggplot( aes(x=STATE, fill = STATE)) +
+  geom_bar() +
+  coord_flip() +
+  theme(axis.text = element_text(size = 5), legend.key.size = unit(0.2, 'cm')) +
+  labs( x = "State", y = "I DON'T KNOW WHAT THIS IS COUNTING", title = "IDK" ) 
+
+```
+Observations:
+Arizona may be considered an outlier because they have the highest number of Pell Grant recorded measurements. (do we just have more years of data recorded for Arizone, or are there repeat values in the dataset?)
+
+The majority of states have less than 2500 measurements for Pell Grant Data.
+
+I would expect 18 measurements for each state since the data spans 1999 - 2017.
+
+```{r}
+# Count the number of 'a's in each element of string
+str_count(pell$STATE, AZ) # DID NOT WORK
+
+
+#filter by STATE = AZ, then just count how many rows there are
+pell %>% 
+  filter(STATE == "AZ", YEAR == 1999) 
+#in the year 1999, 30 different universities in Arizona recieved Pell Grants
+# There are over 1400 recorded values for the Arizona state in the dataset
+```
+
+
+
+Useless pie chart just to see if it works
+```{r}
+pie(pell$RECIPIENT, labels = pell$STATE, main="Pie Chart of amount of pell grant given to each state")
+```
+Conclusion, pie charts are useless, imagine that.
+
+```{r}
+pell %>% 
+ggplot(aes(x=YEAR, y=AWARD, color = STATE, label=STATE)) +
+  geom_point(size=1) +
+  geom_text(hjust=0, vjust=0) +
+  labs( x = "Year", y = "Cumulative Pell Grant Award Amounts", title = "Cumulative Award Amount by Year") +
+  theme(legend.key.size = unit(0.2, 'cm'))
+```
+Observations:
+* 
+
+
